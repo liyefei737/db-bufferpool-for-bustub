@@ -66,15 +66,16 @@ Page *BufferPoolManager::FetchPageImpl(page_id_t page_id) {
     page_table_.erase(replacedPage->page_id_);
   }
 
-  // 4.1   read in the page content from disk
+  // 4   read in the page content from disk
   pages_[free_frame_id].ResetMemory();
   disk_manager_->ReadPage(page_id, pages_[free_frame_id].GetData());
 
-  // 4.2  Update P's metadata, and then return a pointer to P.
+  // 5  Update P's metadata, and then return a pointer to P.
   pages_[free_frame_id].page_id_ = page_id;
   page_table_.insert({page_id, free_frame_id});
   pages_[free_frame_id].pin_count_ = 1;
 
+  latch_.unlock();
   return &pages_[free_frame_id];
 }
 
