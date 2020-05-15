@@ -28,6 +28,7 @@ ClockReplacer::~ClockReplacer() = default;
 bool ClockReplacer::Victim(frame_id_t *frame_id) {
   latch_.lock();
   if (size_ <= 0) {
+    latch_.unlock();
     return false;
   }
 
@@ -68,6 +69,7 @@ void ClockReplacer::Unpin(frame_id_t frame_id) {
   latch_.lock();
   if (!in_replacer_[frame_id]) {
     in_replacer_[frame_id] = true;
+    ref_bits_[frame_id] = true;
     size_++;
   }
   latch_.unlock();
